@@ -96,7 +96,18 @@ namespace ChessWinForms
             }
             finally
             {
-                this.Show();
+                // Guard against trying to show a form that has been disposed (e.g. Application.Exit called by a child dialog)
+                if (!this.IsDisposed && !this.Disposing)
+                {
+                    try
+                    {
+                        this.Show();
+                    }
+                    catch (ObjectDisposedException)
+                    {
+                        // safe fallback: form already disposed, nothing to do
+                    }
+                }
             }
         }
 
@@ -116,7 +127,17 @@ namespace ChessWinForms
             }
             finally
             {
-                this.Show();
+                if (!this.IsDisposed && !this.Disposing)
+                {
+                    try
+                    {
+                        this.Show();
+                    }
+                    catch (ObjectDisposedException)
+                    {
+                        // nothing to do
+                    }
+                }
             }
         }
 
