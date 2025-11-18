@@ -16,7 +16,9 @@ namespace ChessWinForms
 
         public Form1()
         {
-            InitializeComponent(); // apel la codul generat de Designer
+            InitializeComponent();
+            SetDoubleBuffered(boardPanel);
+            // apel la codul generat de Designer
             board = new Board();
             board.InitializeStandardSetup();
             UpdateGameStatus(); // verificare inițială (va afișa GameOver doar dacă e mat/pat/regină capturată)
@@ -25,7 +27,20 @@ namespace ChessWinForms
             this.boardPanel.Paint += BoardPanel_Paint;
             this.boardPanel.MouseClick += BoardPanel_MouseClick;
             this.boardPanel.Resize += (s, e) => this.boardPanel.Invalidate();
+           
         }
+
+        public static void SetDoubleBuffered(Control c)
+        {
+            System.Reflection.PropertyInfo aProp =
+                typeof(Control).GetProperty("DoubleBuffered",
+                System.Reflection.BindingFlags.NonPublic |
+                System.Reflection.BindingFlags.Instance);
+
+            aProp.SetValue(c, true, null);
+        }
+
+
 
         private void Form1_Load(object sender, EventArgs e)
         {
