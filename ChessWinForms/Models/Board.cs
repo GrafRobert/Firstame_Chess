@@ -1,8 +1,6 @@
-﻿using System;
+﻿
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace ChessWinForms.Models
 {
@@ -194,7 +192,7 @@ namespace ChessWinForms.Models
                     var attacker = Cells[r, c];
                     if (attacker == null || attacker.Color != byColor) continue;
 
-                    // 🔒 Ignorăm regii pentru a evita recursia infinită
+                    //Ignorăm regii pentru a evita recursia infinită
                     if (attacker.Type == PieceType.King) continue;
 
                     var moves = attacker.GetPossibleMoves(this);
@@ -204,7 +202,7 @@ namespace ChessWinForms.Models
                             return true;
                     }
                 }
-            }
+            }   
             return false;
         }
 

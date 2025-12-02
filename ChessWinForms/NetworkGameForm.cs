@@ -186,15 +186,15 @@ namespace ChessWinForms
                     g.DrawImage(img, rect);
                 }
             }
-            else
-            {
-                 Font f = new Font("Arial", Math.Max(8, rect.Height / 3));
-                 Brush br = new SolidBrush(Color.Black);
-                string fallbackText = prefix.ToUpper() + suffix;
-                SizeF sz = g.MeasureString(fallbackText, f);
-                PointF pt = new PointF(rect.X + (rect.Width - sz.Width) / 2f, rect.Y + (rect.Height - sz.Height) / 2f);
-                g.DrawString(fallbackText, f, br, pt);
-            }
+            //else
+            //{
+            //     Font f = new Font("Arial", Math.Max(8, rect.Height / 3));
+            //     Brush br = new SolidBrush(Color.Black);
+            //    string fallbackText = prefix.ToUpper() + suffix;
+            //    SizeF sz = g.MeasureString(fallbackText, f);
+            //    PointF pt = new PointF(rect.X + (rect.Width - sz.Width) / 2f, rect.Y + (rect.Height - sz.Height) / 2f);
+            //    g.DrawString(fallbackText, f, br, pt);
+            //}
         }
 
         private void BoardPanel_MouseClick(object sender, MouseEventArgs e)
