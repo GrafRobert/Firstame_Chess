@@ -14,7 +14,7 @@ namespace ChessWinForms
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new StartMenuForm()); // ← trebuie să fie StartMenuForm
+            Application.Run(new StartMenuForm()); //  trebuie să fie StartMenuForm
         }
 
     }

@@ -28,118 +28,111 @@ namespace ChessWinForms
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
 
-            lblTitle = new Label
-            {
-                Text = "Alege modul de joc în rețea",
-                AutoSize = true,
-                Font = new Font("Segoe UI", 14, FontStyle.Regular),
-                Location = new Point(60, 20)
-            };
+            lblTitle = new Label();
+            lblTitle.Text = "Alege modul de joc în rețea";
+            lblTitle.AutoSize = true;
+            lblTitle.Font = new Font("Segoe UI", 14, FontStyle.Regular);
+            lblTitle.Location = new Point(60, 20);
             Controls.Add(lblTitle);
 
-            btnHostGame = new Button
-            {
-                Text = "Host joc",
-                Location = new Point(120, 70),
-                Size = new Size(180, 40)
-            };
-            btnHostGame.Click += BtnHostGame_Click;
+            btnHostGame = new Button();
+            btnHostGame.Text = "Host joc";
+            btnHostGame.Location = new Point(120, 70);
+            btnHostGame.Size = new Size(180, 40);
+            btnHostGame.Click += new EventHandler(BtnHostGame_Click);
             Controls.Add(btnHostGame);
 
-            btnJoinGame = new Button
-            {
-                Text = "Conectează-te la joc",
-                Location = new Point(120, 120),
-                Size = new Size(180, 40)
-            };
-            btnJoinGame.Click += BtnJoinGame_Click;
+            btnJoinGame = new Button();
+            btnJoinGame.Text = "Conectează-te la joc";
+            btnJoinGame.Location = new Point(120, 120);
+            btnJoinGame.Size = new Size(180, 40);
+            btnJoinGame.Click += new EventHandler(BtnJoinGame_Click);
             Controls.Add(btnJoinGame);
 
-            txtIpAddress = new TextBox
-            {
-                Text = "IP gazdă",
-                ForeColor = Color.Gray,
-                Location = new Point(120, 170),
-                Size = new Size(180, 26),
-                Visible = false
-            };
-            txtIpAddress.Enter += (s, e) =>
-            {
-                if (txtIpAddress.Text == "IP gazdă")
-                {
-                    txtIpAddress.Text = "";
-                    txtIpAddress.ForeColor = Color.Black;
-                }
-            };
-            txtIpAddress.Leave += (s, e) =>
-            {
-                if (string.IsNullOrWhiteSpace(txtIpAddress.Text))
-                {
-                    txtIpAddress.Text = "IP gazdă";
-                    txtIpAddress.ForeColor = Color.Gray;
-                }
-            };
+            txtIpAddress = new TextBox();
+            txtIpAddress.Text = "IP gazdă";
+            txtIpAddress.ForeColor = Color.Gray;
+            txtIpAddress.Location = new Point(120, 170);
+            txtIpAddress.Size = new Size(180, 26);
+            txtIpAddress.Visible = false;
+            // Fara lambda aici
+            txtIpAddress.Enter += new EventHandler(TxtIpAddress_Enter);
+            txtIpAddress.Leave += new EventHandler(TxtIpAddress_Leave);
             Controls.Add(txtIpAddress);
 
-            btnConnect = new Button
-            {
-                Text = "Connect",
-                Location = new Point(310, 168),
-                Size = new Size(70, 28),
-                Visible = false
-            };
-            btnConnect.Click += BtnConnect_Click;
+            btnConnect = new Button();
+            btnConnect.Text = "Connect";
+            btnConnect.Location = new Point(310, 168);
+            btnConnect.Size = new Size(70, 28);
+            btnConnect.Visible = false;
+            btnConnect.Click += new EventHandler(BtnConnect_Click);
             Controls.Add(btnConnect);
 
-            lblStatus = new Label
-            {
-                Text = "",
-                AutoSize = true,
-                ForeColor = Color.Blue,
-                Location = new Point(20, 240)
-            };
+            lblStatus = new Label();
+            lblStatus.Text = "";
+            lblStatus.AutoSize = true;
+            lblStatus.ForeColor = Color.Blue;
+            lblStatus.Location = new Point(20, 240);
             Controls.Add(lblStatus);
 
-            btnBack = new Button
-            {
-                Text = "Înapoi",
-                Location = new Point(120, 270),
-                Size = new Size(180, 28)
-            };
-            btnBack.Click += BtnBack_Click;
+            btnBack = new Button();
+            btnBack.Text = "Înapoi";
+            btnBack.Location = new Point(120, 270);
+            btnBack.Size = new Size(180, 28);
+            btnBack.Click += new EventHandler(BtnBack_Click);
             Controls.Add(btnBack);
+        }
+
+        private void TxtIpAddress_Enter(object sender, EventArgs e)
+        {
+            if (txtIpAddress.Text == "IP gazdă")
+            {
+                txtIpAddress.Text = "";
+                txtIpAddress.ForeColor = Color.Black;
+            }
+        }
+
+        private void TxtIpAddress_Leave(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtIpAddress.Text))
+            {
+                txtIpAddress.Text = "IP gazdă";
+                txtIpAddress.ForeColor = Color.Gray;
+            }
         }
 
         private void BtnHostGame_Click(object sender, EventArgs e)
         {
             lblStatus.Text = "Pornești ca Host. Așteaptă conexiuni...";
-            // Deschide NetworkGameForm în modul host
             try
             {
-                using (var gameForm = new NetworkGameForm(isHost: true, ipAddress: null))
+                NetworkGameForm gameForm = new NetworkGameForm(true, null);
+                this.Hide();
+                DialogResult result = gameForm.ShowDialog();
+                gameForm.Dispose();
+
+                if (result == DialogResult.OK)
                 {
-                    this.Hide();
-                    gameForm.ShowDialog();
+                    this.Close();
+                }
+                else
+                {
+                    this.Show();
+                    lblStatus.Text = "";
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Eroare la pornirea host-ului: " + ex.Message, "Eroare");
-            }
-            finally
-            {
-                lblStatus.Text = "";
+                MessageBox.Show("Eroare: " + ex.Message);
                 this.Show();
             }
         }
 
         private void BtnJoinGame_Click(object sender, EventArgs e)
         {
-            // Arată câmpul IP și butonul Connect pentru input explicit
             txtIpAddress.Visible = true;
             btnConnect.Visible = true;
             txtIpAddress.Focus();
-            // Dacă textbox are placeholder, selectează tot textul pentru a facilita scrierea
             if (txtIpAddress.Text == "IP gazdă")
             {
                 txtIpAddress.SelectAll();
@@ -149,44 +142,32 @@ namespace ChessWinForms
 
         private void BtnConnect_Click(object sender, EventArgs e)
         {
-            // Validări
-            if (!txtIpAddress.Visible)
-            {
-                MessageBox.Show("Apasă mai întâi 'Conectează-te la joc' pentru a introduce IP-ul.", "Conectare");
-                return;
-            }
+            string ipText = txtIpAddress.Text;
+            if (ipText != null) ipText = ipText.Trim();
 
-            string ipText = txtIpAddress.Text?.Trim();
-            if (string.IsNullOrWhiteSpace(ipText) || ipText == "IP gazdă")
-            {
-                MessageBox.Show("Introdu IP-ul gazdei!", "Conectare");
-                txtIpAddress.Focus();
-                return;
-            }
+            if (string.IsNullOrWhiteSpace(ipText) || ipText == "IP gazdă") return;
 
-            if (!IPAddress.TryParse(ipText, out var parsedIp))
-            {
-                MessageBox.Show("Format IP invalid. Folosește 127.0.0.1 pentru test local.", "Conectare");
-                txtIpAddress.Focus();
-                return;
-            }
-
-            lblStatus.Text = $"Încerc conectarea la {ipText} ...";
+            lblStatus.Text = "Încerc conectarea la " + ipText + " ...";
             try
             {
-                using (var gameForm = new NetworkGameForm(isHost: false, ipAddress: ipText))
+                NetworkGameForm gameForm = new NetworkGameForm(false, ipText);
+                this.Hide();
+                DialogResult result = gameForm.ShowDialog();
+                gameForm.Dispose();
+
+                if (result == DialogResult.OK)
                 {
-                    this.Hide();
-                    gameForm.ShowDialog();
+                    this.Close();
+                }
+                else
+                {
+                    this.Show();
+                    lblStatus.Text = "";
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Eroare la conectare: " + ex.Message, "Eroare");
-            }
-            finally
-            {
-                lblStatus.Text = "";
+                MessageBox.Show("Eroare: " + ex.Message);
                 this.Show();
             }
         }
@@ -196,22 +177,6 @@ namespace ChessWinForms
             this.Close();
         }
 
-        private void InitializeComponent()
-        {
-            this.SuspendLayout();
-            // 
-            // NetworkSetupForm
-            // 
-            this.ClientSize = new System.Drawing.Size(284, 261);
-            this.Name = "NetworkSetupForm";
-            this.Load += new System.EventHandler(this.NetworkSetupForm_Load);
-            this.ResumeLayout(false);
-
-        }
-
-        private void NetworkSetupForm_Load(object sender, EventArgs e)
-        {
-
-        }
+        private void NetworkSetupForm_Load(object sender, EventArgs e) { }
     }
 }

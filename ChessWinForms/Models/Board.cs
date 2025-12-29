@@ -88,8 +88,7 @@ namespace ChessWinForms.Models
             return piece.GetPossibleMoves(this);
         }
 
-        // Găsește poziția regelui pentru o culoare; returnează null dacă nu există
-        // Caută poziția regelui; returnează true și pune în out poziția dacă a fost găsit
+       
         public bool TryFindKingPosition(PieceColor color, out Position kingPos)
         {
             for (int r = 0; r < 8; r++)
@@ -105,12 +104,13 @@ namespace ChessWinForms.Models
                 }
             }
 
-            kingPos = new Position(-1, -1); // valoare sentinel
+            kingPos = new Position(-1, -1); 
             return false;
         }
 
 
-        // Returnează true dacă regele de culoarea `color` este atacat acum
+
+       
         public bool IsInCheck(PieceColor color)
         {
             Position kingPos;
@@ -135,7 +135,7 @@ namespace ChessWinForms.Models
         }
 
 
-        // Verifică dacă jucătorul are vreo mutare (pseudo-legală) — folosit pentru mat/stalemate detection simplu
+        
         public bool HasAnyPseudoMove(PieceColor color)
         {
             for (int r = 0; r < 8; r++)
@@ -151,7 +151,7 @@ namespace ChessWinForms.Models
             return false;
         }
 
-        // Detectare checkmate (bazată pe ideea simplă: regele e în check și nu există vreo mutare pseudo-legală)
+       
         public bool IsCheckmate(PieceColor color)
         {
             return IsInCheck(color) && !HasAnyPseudoMove(color);
@@ -159,7 +159,7 @@ namespace ChessWinForms.Models
             
         }
 
-        // Detectare stalemate (regele nu e în check, dar nu sunt mutări pseudo-legale)
+       
         public bool IsStalemate(PieceColor color)
         {
             if (IsInCheck(color)) return false;
@@ -192,7 +192,7 @@ namespace ChessWinForms.Models
                     var attacker = Cells[r, c];
                     if (attacker == null || attacker.Color != byColor) continue;
 
-                    //Ignorăm regii pentru a evita recursia infinită
+                    
                     if (attacker.Type == PieceType.King) continue;
 
                     var moves = attacker.GetPossibleMoves(this);

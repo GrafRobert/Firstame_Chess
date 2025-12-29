@@ -8,26 +8,75 @@ namespace ChessWinForms
 {
     public partial class Form1 : Form
     {
-        private Board board;
+        private GameManager gameManager;
         private int selectedRow = -1;
         private int selectedCol = -1;
-        private PieceColor currentTurn = PieceColor.White;
-        private bool gameOver = false;
+
+        // ELEMENT NOU: Label pentru afișarea turei
+        private Label lblTurn;
 
         public Form1()
         {
             InitializeComponent();
-            SetDoubleBuffered(boardPanel);
-            // apel la codul generat de Designer
-            board = new Board();
-            board.InitializeStandardSetup();
-            UpdateGameStatus(); // verificare inițială (va afișa GameOver doar dacă e mat/pat/regină capturată)
 
-            // Înregistrăm evenimentele; boardPanel este definit în Designer
-            this.boardPanel.Paint += BoardPanel_Paint;
-            this.boardPanel.MouseClick += BoardPanel_MouseClick;
-            this.boardPanel.Resize += (s, e) => this.boardPanel.Invalidate();
-           
+            // --- CONFIGURARE LABEL TURĂ ---
+            lblTurn = new Label();
+            lblTurn.AutoSize = true;
+            lblTurn.Location = new Point(10, 10); // Poziție stânga-sus (poate fi ajustată)
+            lblTurn.Font = new Font("Segoe UI", 12, FontStyle.Bold);
+            lblTurn.BackColor = Color.White;
+            lblTurn.Text = "Tura: Alb";
+            this.Controls.Add(lblTurn);
+            lblTurn.BringToFront(); // Ne asigurăm că e deasupra tablei
+            // -----------------------------
+
+            SetDoubleBuffered(boardPanel);
+
+            gameManager = new GameManager();
+            // Abonare la eveniment fără lambda
+            gameManager.OnGameStateChanged += new GameStateChangedHandler(OnGameStateChanged);
+
+            this.boardPanel.Paint += new PaintEventHandler(BoardPanel_Paint);
+            this.boardPanel.MouseClick += new MouseEventHandler(BoardPanel_MouseClick);
+            this.boardPanel.Resize += new EventHandler(BoardPanel_Resize);
+        }
+
+        private void OnGameStateChanged()
+        {
+            // --- ACTUALIZARE TEXT LABEL ---
+            string numeTura = "";
+            if (gameManager.CurrentTurn == PieceColor.White)
+                numeTura = "Alb";
+            else
+                numeTura = "Negru";
+
+            lblTurn.Text = "Tura: " + numeTura;
+
+            // Schimbare culoare text pentru vizibilitate
+            if (gameManager.CurrentTurn == PieceColor.White)
+                lblTurn.ForeColor = Color.Black; // Text negru pentru tura albului
+            else
+                lblTurn.ForeColor = Color.Red;   // Text roșu pentru tura negrului
+            // -----------------------------
+
+            boardPanel.Invalidate();
+
+            if (gameManager.IsGameOver)
+            {
+                this.BeginInvoke(new MethodInvoker(ShowGameOverAndClose));
+            }
+        }
+
+        private void ShowGameOverAndClose()
+        {
+            GameOverForm gameOverForm = new GameOverForm(gameManager.GameOverMessage);
+            gameOverForm.ShowDialog();
+            this.Close();
+        }
+
+        private void BoardPanel_Resize(object sender, EventArgs e)
+        {
+            this.boardPanel.Invalidate();
         }
 
         public static void SetDoubleBuffered(Control c)
@@ -37,15 +86,11 @@ namespace ChessWinForms
                 System.Reflection.BindingFlags.NonPublic |
                 System.Reflection.BindingFlags.Instance);
 
-            aProp.SetValue(c, true, null);
+            if (aProp != null)
+                aProp.SetValue(c, true, null);
         }
 
-
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            // opțional: initializări la load
-        }
+        private void Form1_Load(object sender, EventArgs e) { }
 
         private int GetCellSize()
         {
@@ -66,10 +111,12 @@ namespace ChessWinForms
                 {
                     Rectangle rect = new Rectangle(c * cell, r * cell, cell, cell);
                     bool dark = ((r + c) % 2) == 1;
-                    using (Brush b = new SolidBrush(dark ? Color.SaddleBrown : Color.BurlyWood))
-                        g.FillRectangle(b, rect);
 
-                    Piece p = board.GetPiece(new Position(r, c));
+                    Brush b = new SolidBrush(dark ? Color.SaddleBrown : Color.BurlyWood);
+                    g.FillRectangle(b, rect);
+                    b.Dispose();
+
+                    Piece p = gameManager.Board.GetPiece(new Position(r, c));
                     if (p != null)
                         DrawPiece(g, p, rect);
                 }
@@ -78,48 +125,35 @@ namespace ChessWinForms
             if (selectedRow >= 0 && selectedCol >= 0)
             {
                 Rectangle selRect = new Rectangle(selectedCol * cell, selectedRow * cell, cell, cell);
-                using (Pen pen = new Pen(Color.Red, 3))
-                    g.DrawRectangle(pen, selRect);
+                Pen pen = new Pen(Color.Red, 3);
+                g.DrawRectangle(pen, selRect);
+                pen.Dispose();
 
-                List<Position> moves = board.GetPossibleMoves(new Position(selectedRow, selectedCol));
-                for (int i = 0; i < moves.Count; i++)
+                List<Position> moves = gameManager.Board.GetPossibleMoves(new Position(selectedRow, selectedCol));
+                foreach (Position m in moves)
                 {
-                    Position m = moves[i];
                     Rectangle center = new Rectangle(m.Column * cell + cell / 4, m.Row * cell + cell / 4, cell / 2, cell / 2);
-                    using (Brush br = new SolidBrush(Color.FromArgb(160, Color.Green)))
-                        g.FillEllipse(br, center);
+                    Brush br = new SolidBrush(Color.FromArgb(160, Color.Green));
+                    g.FillEllipse(br, center);
+                    br.Dispose();
                 }
             }
         }
 
         private void DrawPiece(Graphics g, Piece piece, Rectangle rect)
         {
-            string prefix = piece.Color == PieceColor.White ? "w" : "b";
+            string prefix = (piece.Color == PieceColor.White) ? "w" : "b";
             string suffix = "";
 
             switch (piece.Type)
             {
-                case PieceType.Pawn:
-                    suffix = "p";
-                    break;
-                case PieceType.Rook:
-                    suffix = "r";
-                    break;
-                case PieceType.Knight:
-                    suffix = "n";
-                    break;
-                case PieceType.Bishop:
-                    suffix = "b";
-                    break;
-                case PieceType.Queen:
-                    suffix = "q";
-                    break;
-                case PieceType.King:
-                    suffix = "k";
-                    break;
-                default:
-                    suffix = "?";
-                    break;
+                case PieceType.Pawn: suffix = "p"; break;
+                case PieceType.Rook: suffix = "r"; break;
+                case PieceType.Knight: suffix = "n"; break;
+                case PieceType.Bishop: suffix = "b"; break;
+                case PieceType.Queen: suffix = "q"; break;
+                case PieceType.King: suffix = "k"; break;
+                default: suffix = "?"; break;
             }
 
             string imageName = prefix + suffix + ".png";
@@ -127,73 +161,41 @@ namespace ChessWinForms
 
             if (System.IO.File.Exists(imagePath))
             {
-                using (Image img = Image.FromFile(imagePath))
-                {
-                    g.DrawImage(img, rect);
-                }
+                Image img = Image.FromFile(imagePath);
+                g.DrawImage(img, rect);
+                img.Dispose();
             }
             else
             {
-                // fallback: desen text dacă imaginea lipsește
-                using (Font f = new Font("Arial", Math.Max(8, rect.Height / 3)))
-                using (Brush br = new SolidBrush(Color.Black))
-                {
-                    string fallbackText = prefix.ToUpper() + suffix;
-                    SizeF sz = g.MeasureString(fallbackText, f);
-                    PointF pt = new PointF(rect.X + (rect.Width - sz.Width) / 2f, rect.Y + (rect.Height - sz.Height) / 2f);
-                    g.DrawString(fallbackText, f, br, pt);
-                }
-            }
-        }
-
-
-
-        private void UpdateGameStatus()
-        {
-            PieceColor opponent = currentTurn;
-            PieceColor mover = currentTurn == PieceColor.White ? PieceColor.Black : PieceColor.White;
-
-            // Regele adversarului trebuie să existe
-            if (!board.TryFindKingPosition(opponent, out Position oppKingPos))
-            {
-                ShowGameOver($"{opponent} king captured. {mover} wins!");
-                gameOver = true;
-                return;
-            }
-
-            // Afișăm GameOver doar pentru checkmate sau stalemate
-            if (board.IsCheckmate(opponent))
-            {
-                ShowGameOver($"{opponent} is checkmated. {mover} wins!");
-                gameOver = true;
-            }
-            else if (board.IsStalemate(opponent))
-            {
-                ShowGameOver("Stalemate. Draw.");
-                gameOver = true;
+                // Fallback text
+                Font f = new Font("Arial", Math.Max(8, rect.Height / 3));
+                Brush br = new SolidBrush(Color.Black);
+                string fallbackText = prefix.ToUpper() + suffix;
+                SizeF sz = g.MeasureString(fallbackText, f);
+                PointF pt = new PointF(rect.X + (rect.Width - sz.Width) / 2f, rect.Y + (rect.Height - sz.Height) / 2f);
+                g.DrawString(fallbackText, f, br, pt);
+                f.Dispose();
+                br.Dispose();
             }
         }
 
         private Position PixelToPosition(Point p)
         {
             int cell = GetCellSize();
-            int col = p.X / cell;
-            int row = p.Y / cell;
-            return new Position(row, col);
+            return new Position(p.Y / cell, p.X / cell);
         }
 
         private void BoardPanel_MouseClick(object sender, MouseEventArgs e)
         {
-            if (gameOver) return;
+            if (gameManager.IsGameOver) return;
             Position pos = PixelToPosition(e.Location);
             if (!pos.IsValid()) return;
 
-            Piece clickedPiece = board.GetPiece(pos);
+            Piece clickedPiece = gameManager.Board.GetPiece(pos);
 
-            // Selectare piesă
             if (selectedRow < 0 || selectedCol < 0)
             {
-                if (clickedPiece != null && clickedPiece.Color == currentTurn)
+                if (clickedPiece != null && clickedPiece.Color == gameManager.CurrentTurn)
                 {
                     selectedRow = pos.Row;
                     selectedCol = pos.Column;
@@ -202,11 +204,7 @@ namespace ChessWinForms
                 return;
             }
 
-            int fromRow = selectedRow;
-            int fromCol = selectedCol;
-
-            // Deselecție
-            if (fromRow == pos.Row && fromCol == pos.Column)
+            if (selectedRow == pos.Row && selectedCol == pos.Column)
             {
                 selectedRow = -1;
                 selectedCol = -1;
@@ -214,67 +212,22 @@ namespace ChessWinForms
                 return;
             }
 
-            List<Position> moves = board.GetPossibleMoves(new Position(fromRow, fromCol));
-            bool canMove = false;
-            for (int i = 0; i < moves.Count; i++)
-            {
-                if (moves[i].Row == pos.Row && moves[i].Column == pos.Column)
-                {
-                    canMove = true;
-                    break;
-                }
-            }
+            Position from = new Position(selectedRow, selectedCol);
 
-            if (canMove)
+            if (gameManager.TryMove(from, pos))
             {
-                var movingPiece = board.GetPiece(new Position(fromRow, fromCol));
-                // Validare mutare rege: nu permite mutarea pe pătrat controlat de adversar
-                if (movingPiece != null && movingPiece.Type == PieceType.King)
-                {
-                    PieceColor opponent = currentTurn == PieceColor.White ? PieceColor.Black : PieceColor.White;
-                    if (board.IsSquareAttacked(pos, opponent))
-                    {
-                        MessageBox.Show("Regele nu poate muta pe un pătrat controlat de adversar!", "Mutare ilegală");
-                        selectedRow = -1;
-                        selectedCol = -1;
-                        boardPanel.Invalidate();
-                        return;
-                    }
-                }
-
-                // Aplicăm mutarea
-                board.MovePiece(new Position(fromRow, fromCol), pos);
                 selectedRow = -1;
                 selectedCol = -1;
-
-                // Schimbăm tura
-                currentTurn = currentTurn == PieceColor.White ? PieceColor.Black : PieceColor.White;
-
-                // Verificăm starea jocului numai după mutare
-                UpdateGameStatus();
-                boardPanel.Invalidate();
             }
             else
             {
-                // Dacă s-a dat click pe o piesă proprie, selectăm acea piesă
-                if (clickedPiece != null && clickedPiece.Color == currentTurn)
+                if (clickedPiece != null && clickedPiece.Color == gameManager.CurrentTurn)
                 {
                     selectedRow = pos.Row;
                     selectedCol = pos.Column;
                     boardPanel.Invalidate();
                 }
             }
-        }
-
-        private void ShowGameOver(string message)
-        {
-            var gameOverForm = new GameOverForm(message);
-            gameOverForm.ShowDialog();
-
-            gameOver = true;
-            selectedRow = -1;
-            selectedCol = -1;
-            boardPanel.Invalidate();
         }
     }
 }
