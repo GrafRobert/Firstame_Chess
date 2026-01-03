@@ -34,7 +34,7 @@ namespace ChessWinForms
 
             gameManager = new GameManager();
             // Abonare la eveniment fără lambda
-            gameManager.OnGameStateChanged += new GameStateChangedHandler(OnGameStateChanged);
+            gameManager.OnGameStateChanged += OnGameStateChanged;
 
             this.boardPanel.Paint += new PaintEventHandler(BoardPanel_Paint);
             this.boardPanel.MouseClick += new MouseEventHandler(BoardPanel_MouseClick);
@@ -52,12 +52,7 @@ namespace ChessWinForms
 
             lblTurn.Text = "Tura: " + numeTura;
 
-            // Schimbare culoare text pentru vizibilitate
-            if (gameManager.CurrentTurn == PieceColor.White)
-                lblTurn.ForeColor = Color.Black; // Text negru pentru tura albului
-            else
-                lblTurn.ForeColor = Color.Red;   // Text roșu pentru tura negrului
-            // -----------------------------
+            
 
             boardPanel.Invalidate();
 
@@ -165,18 +160,18 @@ namespace ChessWinForms
                 g.DrawImage(img, rect);
                 img.Dispose();
             }
-            else
-            {
-                // Fallback text
-                Font f = new Font("Arial", Math.Max(8, rect.Height / 3));
-                Brush br = new SolidBrush(Color.Black);
-                string fallbackText = prefix.ToUpper() + suffix;
-                SizeF sz = g.MeasureString(fallbackText, f);
-                PointF pt = new PointF(rect.X + (rect.Width - sz.Width) / 2f, rect.Y + (rect.Height - sz.Height) / 2f);
-                g.DrawString(fallbackText, f, br, pt);
-                f.Dispose();
-                br.Dispose();
-            }
+            //else
+            //{
+            //    // Fallback text
+            //    Font f = new Font("Arial", Math.Max(8, rect.Height / 3));
+            //    Brush br = new SolidBrush(Color.Black);
+            //    string fallbackText = prefix.ToUpper() + suffix;
+            //    SizeF sz = g.MeasureString(fallbackText, f);
+            //    PointF pt = new PointF(rect.X + (rect.Width - sz.Width) / 2f, rect.Y + (rect.Height - sz.Height) / 2f);
+            //    g.DrawString(fallbackText, f, br, pt);
+            //    f.Dispose();
+            //    br.Dispose();
+            //}
         }
 
         private Position PixelToPosition(Point p)

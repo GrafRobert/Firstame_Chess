@@ -27,10 +27,13 @@ namespace ChessWinForms.Models
             Row = row;
             Column = column;
         }
-        
-            public bool IsValid() => Row >= 0 && Row < 8 && Column >= 0 && Column < 8;
 
-        public override string ToString() => $"{Row}, {Column}";
+        public bool IsValid()
+        {
+            return Row >= 0 && Row < 8 && Column >= 0 && Column < 8;
+        }
+
+        //public override string ToString() => $"{Row}, {Column}";
 
     }
 }

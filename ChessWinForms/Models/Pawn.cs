@@ -27,12 +27,12 @@ namespace ChessWinForms.Models
                 startRow = 1;
             }
 
-            var one = new Position(Position.Row + dir, Position.Column);
+            Position one = new Position(Position.Row + dir, Position.Column);
 
             if(one.IsValid() && board.GetPiece(one) == null)
                 moves.Add(one);
 
-            var two = new Position(Position.Row + 2 * dir, Position.Column);
+            Position two = new Position(Position.Row + 2 * dir, Position.Column);
 
             if (Position.Row == startRow && two.IsValid() && board.GetPiece(two)==null)
                 moves.Add(two);
@@ -40,7 +40,7 @@ namespace ChessWinForms.Models
             Position captureLeft = new Position(Position.Row + dir, Position.Column - 1);
             Position captureRight = new Position(Position.Row + dir, Position.Column + 1);
 
-            if ((captureLeft.IsValid()))
+            if (captureLeft.IsValid())
             {
                 Piece p = board.GetPiece(captureLeft);
 
@@ -49,7 +49,7 @@ namespace ChessWinForms.Models
             }
 
 
-            if ((captureRight.IsValid()))
+            if (captureRight.IsValid())
             {
                 Piece p = board.GetPiece(captureRight);
 

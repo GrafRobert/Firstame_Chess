@@ -27,7 +27,6 @@ namespace ChessWinForms.Models
             if(piece == null) return;
             SetPiece(to, piece);
             SetPiece(from, null);
-            piece.HasMoved = true;
             piece.Position = to;
         }
 
@@ -89,23 +88,22 @@ namespace ChessWinForms.Models
         }
 
        
-        public bool TryFindKingPosition(PieceColor color, out Position kingPos)
+        public Position TryFindKingPosition(PieceColor color)
         {
             for (int r = 0; r < 8; r++)
             {
                 for (int c = 0; c < 8; c++)
                 {
-                    var p = Cells[r, c];
+                    Piece p = Cells[r, c];
                     if (p != null && p.Type == PieceType.King && p.Color == color)
                     {
-                        kingPos = new Position(r, c);
-                        return true;
+                        return  new Position(r, c);
+                        
                     }
                 }
             }
 
-            kingPos = new Position(-1, -1); 
-            return false;
+            return null;
         }
 
 
@@ -113,14 +111,14 @@ namespace ChessWinForms.Models
        
         public bool IsInCheck(PieceColor color)
         {
-            Position kingPos;
-            if (!TryFindKingPosition(color, out kingPos)) return false;
+            Position kingPos = TryFindKingPosition(color);
+            if (kingPos == null) return false;
 
             for (int r = 0; r < 8; r++)
             {
                 for (int c = 0; c < 8; c++)
                 {
-                    var attacker = Cells[r, c];
+                    Piece attacker = Cells[r, c];
                     if (attacker == null || attacker.Color == color) continue;
                     var moves = attacker.GetPossibleMoves(this);
                     for (int i = 0; i < moves.Count; i++)
@@ -183,19 +181,20 @@ namespace ChessWinForms.Models
 
 
 
-        public bool IsSquareAttacked(Position pos, PieceColor byColor)
+        public bool IsSquareAttacked(Position pos, PieceColor Color)
         {
             for (int r = 0; r < 8; r++)
             {
                 for (int c = 0; c < 8; c++)
                 {
                     var attacker = Cells[r, c];
-                    if (attacker == null || attacker.Color != byColor) continue;
+                    if (attacker == null || attacker.Color != Color) continue;
 
                     
                     if (attacker.Type == PieceType.King) continue;
 
                     var moves = attacker.GetPossibleMoves(this);
+
                     foreach (var m in moves)
                     {
                         if (m.Row == pos.Row && m.Column == pos.Column)

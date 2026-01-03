@@ -37,7 +37,7 @@ namespace ChessWinForms
             this.ipAddress = ipAddress;
 
             gameManager = new GameManager();
-            gameManager.OnGameStateChanged += new GameStateChangedHandler(OnGameStateChanged);
+            gameManager.OnGameStateChanged += OnGameStateChanged;
 
             // --- CONFIGURARE LABEL TURĂ ---
             lblTurn = new Label();
@@ -201,7 +201,7 @@ namespace ChessWinForms
 
         private void ApplyRemoteMoveSafe(Position from, Position to)
         {
-            gameManager.ApplyRemoteMove(from, to);
+            gameManager.RemoteMove(from, to);
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)

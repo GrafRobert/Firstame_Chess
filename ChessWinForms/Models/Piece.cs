@@ -11,8 +11,6 @@ namespace ChessWinForms.Models
 
         public Position Position { get; set; }
 
-        public bool HasMoved { get; set; }
-
         protected Piece(PieceColor color, Position pos)
         {
             Color = color;
