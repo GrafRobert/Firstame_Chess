@@ -178,5 +178,23 @@ namespace ChessWinForms
         }
 
         private void NetworkSetupForm_Load(object sender, EventArgs e) { }
+
+        private void InitializeComponent()
+        {
+            this.SuspendLayout();
+            // 
+            // NetworkSetupForm
+            // 
+            this.ClientSize = new System.Drawing.Size(284, 261);
+            this.Name = "NetworkSetupForm";
+            this.Load += new System.EventHandler(this.NetworkSetupForm_Load_1);
+            this.ResumeLayout(false);
+
+        }
+
+        private void NetworkSetupForm_Load_1(object sender, EventArgs e)
+        {
+
+        }
     }
 }

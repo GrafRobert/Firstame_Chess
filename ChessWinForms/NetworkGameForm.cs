@@ -39,18 +39,18 @@ namespace ChessWinForms
             gameManager = new GameManager();
             gameManager.OnGameStateChanged += OnGameStateChanged;
 
-            // --- CONFIGURARE LABEL TURĂ ---
+           
             lblTurn = new Label();
-            lblTurn.Dock = DockStyle.Top; // Se lipește de marginea de sus
-            lblTurn.Height = 30;          // Înălțime fixă
-            lblTurn.TextAlign = ContentAlignment.MiddleCenter; // Centrat
+            lblTurn.Dock = DockStyle.Top;
+            lblTurn.Height = 30;          
+            lblTurn.TextAlign = ContentAlignment.MiddleCenter; 
             lblTurn.Font = new Font("Segoe UI", 14, FontStyle.Bold);
             lblTurn.Text = "Așteptare conexiune...";
-            Controls.Add(lblTurn); // Adăugăm ÎNAINTE de boardPanel pentru ordinea dock-ului
-            // -----------------------------
+            Controls.Add(lblTurn); 
+           
 
             boardPanel = new Panel();
-            boardPanel.Dock = DockStyle.Fill; // Ocupă restul spațiului
+            boardPanel.Dock = DockStyle.Fill; 
             boardPanel.BackColor = Color.Gray;
 
             boardPanel.Paint += new PaintEventHandler(BoardPanel_Paint);
@@ -62,10 +62,10 @@ namespace ChessWinForms
                 aProp.SetValue(boardPanel, true, null);
 
             Controls.Add(boardPanel);
-            // Asigurăm ordinea corectă (Label sus, Tabla jos)
+            
             boardPanel.BringToFront();
-            lblTurn.SendToBack(); // De fapt, la DockStyle, ordinea adăugării contează. 
-                                  // Label Dock Top + Panel Dock Fill = OK.
+            lblTurn.SendToBack();
+                                 
 
             if (isHost)
                 StartHosting();
@@ -75,24 +75,19 @@ namespace ChessWinForms
 
         private void OnGameStateChanged()
         {
-            // --- ACTUALIZARE LABEL ---
+        
             string numeTura = "";
             if (gameManager.CurrentTurn == PieceColor.White)
                 numeTura = "Alb";
             else
                 numeTura = "Negru";
 
-            // Putem adăuga un indiciu vizual dacă e tura MEA
+           
 
 
             lblTurn.Text = "Tura: " + numeTura;
 
-            if (gameManager.CurrentTurn == PieceColor.White)
-                lblTurn.ForeColor = Color.Black;
-            else
-                lblTurn.ForeColor = Color.Red;
-            // ------------------------
-
+          
             boardPanel.Invalidate();
 
             if (gameManager.IsGameOver)
@@ -127,15 +122,17 @@ namespace ChessWinForms
                 listener = new TcpListener(IPAddress.Any, 5000);
                 listener.Start();
 
-                // Actualizăm label-ul de stare
+               
                 lblTurn.Text = "Host - Aștept jucătorul...";
 
                 client = await listener.AcceptTcpClientAsync();
+
+                //Canal de date
                 stream = client.GetStream();
 
                 // Setăm textul inițial când începe jocul
                 myColor = PieceColor.White;
-                lblTurn.Text = "Jocul a început! Tura: Alb (Tura Ta)";
+                lblTurn.Text = "Jocul a început! Tura: Alb ";
 
                 ListenForMoves();
             }
@@ -155,7 +152,7 @@ namespace ChessWinForms
                 stream = client.GetStream();
 
                 myColor = PieceColor.Black;
-                lblTurn.Text = "Conectat! Tura: Alb (Adversar)";
+                lblTurn.Text = "Conectat! Tura: Alb";
 
                 ListenForMoves();
             }
@@ -174,6 +171,7 @@ namespace ChessWinForms
                 try
                 {
                     int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
+
                     if (bytesRead == 0)
                     {
                         this.BeginInvoke(new MethodInvoker(OnConnectionLost));
@@ -188,7 +186,7 @@ namespace ChessWinForms
                         Position from = ParsePosition(parts[0]);
                         Position to = ParsePosition(parts[1]);
 
-                        this.Invoke(new UpdateBoardDelegate(ApplyRemoteMoveSafe), new object[] { from, to });
+                        this.Invoke(new UpdateBoardDelegate(ApplyRemoteMove), new object[] { from, to });
                     }
                 }
                 catch (Exception)
@@ -199,7 +197,7 @@ namespace ChessWinForms
             }
         }
 
-        private void ApplyRemoteMoveSafe(Position from, Position to)
+        private void ApplyRemoteMove(Position from, Position to)
         {
             gameManager.RemoteMove(from, to);
         }
