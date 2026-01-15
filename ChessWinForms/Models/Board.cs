@@ -132,27 +132,73 @@ namespace ChessWinForms.Models
             return false;
         }
 
-
-        
-        public bool HasAnyPseudoMove(PieceColor color)
+        public bool HasAnyLegalMove(PieceColor color)
         {
+            // 1. Luăm toate piesele jucătorului 'color'
             for (int r = 0; r < 8; r++)
             {
                 for (int c = 0; c < 8; c++)
                 {
-                    var p = Cells[r, c];
+                    Piece p = Cells[r, c];
                     if (p == null || p.Color != color) continue;
+
+                    // 2. Luăm toate mutările posibile "fizic" (geometrice)
                     var moves = p.GetPossibleMoves(this);
-                    if (moves != null && moves.Count > 0) return true;
+
+                    foreach (var target in moves)
+                    {
+                        // --- SIMULARE ---
+                        // Salvăm starea curentă
+                        Position start = p.Position;
+                        Piece captured = Cells[target.Row, target.Column];
+
+                        // Executăm mutarea temporar direct pe matricea Cells
+                        SetPiece(target, p);
+                        SetPiece(start, null);
+                        //Cells[target.Row, target.Column] = p;
+                        //Cells[start.Row, start.Column] = null;
+                        //p.Position = target;
+
+                        // Verificăm: A dispărut șahul?
+                        bool kingSafe = !IsInCheck(color);
+
+                        // --- UNDO (Revenim la starea inițială) ---
+                        SetPiece(start, p);
+                        SetPiece(target, captured);
+                        //Cells[start.Row, start.Column] = p;
+                        //p.Position = start;
+                        //Cells[target.Row, target.Column] = captured;
+
+                        // Dacă am găsit MĂCAR O mutare care ne scoate din șah, înseamnă că nu e mat.
+                        if (kingSafe) return true;
+                    }
                 }
             }
+
+            // Dacă am verificat tot și nu am găsit nicio scăpare
             return false;
         }
 
-       
+
+        //public bool HasAnyPseudoMove(PieceColor color)
+        //{
+        //    for (int r = 0; r < 8; r++)
+        //    {
+        //        for (int c = 0; c < 8; c++)
+        //        {
+        //            var p = Cells[r, c];
+        //            if (p == null || p.Color != color) continue;
+        //            var moves = p.GetPossibleMoves(this);
+        //            if (moves != null && moves.Count > 0) return true;
+        //        }
+        //    }
+        //    return false;
+        //}
+
+
         public bool IsCheckmate(PieceColor color)
         {
-            return IsInCheck(color) && !HasAnyPseudoMove(color);
+            return IsInCheck(color) && !HasAnyLegalMove(color);
 
             
         }
@@ -161,7 +207,7 @@ namespace ChessWinForms.Models
         public bool IsStalemate(PieceColor color)
         {
             if (IsInCheck(color)) return false;
-            return !HasAnyPseudoMove(color);
+            return !HasAnyLegalMove(color);
         }
 
         public List<Piece> GetAllPieces(PieceColor color)

@@ -20,7 +20,7 @@ namespace ChessWinForms
             Button btnQuit = new Button
             {
                 Text = "Quit",
-                Location = new System.Drawing.Point(80, 60),
+                Location = new System.Drawing.Point(150, 60),
                 Width = 80
             };
             btnQuit.Click += (s, e) => Application.Exit();
@@ -28,7 +28,7 @@ namespace ChessWinForms
             Controls.Add(lbl);
             Controls.Add(btnQuit);
             this.StartPosition = FormStartPosition.CenterParent;
-            this.Size = new System.Drawing.Size(250, 150);
+            this.Size = new System.Drawing.Size(400, 150);
         }
 
         private void GameOverForm_Load(object sender, EventArgs e)

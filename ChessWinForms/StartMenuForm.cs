@@ -19,7 +19,7 @@ namespace ChessWinForms
 
         public StartMenuForm()
         {
-            // Construim UI din cod (fără Designer) ca să eviți conflicte cu .Designer.cs
+            
             SetupUI();
         }
 

@@ -31,14 +31,12 @@ namespace ChessWinForms
 
             Piece piece = Board.GetPiece(from);
 
-           
+            // 1. Verificări de bază (dacă e piesa ta)
             if (piece == null || piece.Color != CurrentTurn) return false;
 
-          
+            // 2. Verificăm dacă mutarea este fizic posibilă pentru acea piesă
             var moves = Board.GetPossibleMoves(from);
-
             bool isPossible = false;
-
             foreach (Position m in moves)
             {
                 if (m.Row == to.Row && m.Column == to.Column)
@@ -49,16 +47,32 @@ namespace ChessWinForms
             }
             if (!isPossible) return false;
 
-            
-            if (piece.Type == PieceType.King)
-            {
-                PieceColor opponent = CurrentTurn == PieceColor.White ? PieceColor.Black : PieceColor.White;
-                if (Board.IsSquareAttacked(to, opponent))
-                {
-                    return false;
-                }
-            }
+            // --- MODIFICARE AICI: SIMULARE MUTARE PENTRU A VERIFICA ȘAHUL ---
 
+            // A. Salvăm starea de pe pătratul țintă (poate fi o piesă inamică sau null)
+            Piece capturedPiece = Board.GetPiece(to);
+
+            // B. Executăm mutarea temporar pe tablă
+            // Folosim SetPiece pentru a muta piesa fără a declanșa schimbarea turei
+            Board.SetPiece(to, piece);
+            Board.SetPiece(from, null);
+
+            // C. Verificăm: După această mutare, Regele meu este în șah?
+            bool kingInCheck = Board.IsInCheck(CurrentTurn);
+
+            // D. Dăm "Undo" la mutare (revenim la starea inițială)
+            Board.SetPiece(from, piece); // Punem piesa noastră înapoi
+            Board.SetPiece(to, capturedPiece); // Punem piesa capturată (dacă exista) înapoi
+
+            // E. Decizia
+            if (kingInCheck)
+            {
+                // Dacă mutarea ne lasă (sau ne bagă) în șah, este ilegală!
+                return false;
+            }
+            // -------------------------------------------------------------
+
+            // Dacă am trecut de verificare, executăm mutarea reală
             ExecuteMove(from, to);
             return true;
         }

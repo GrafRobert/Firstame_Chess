@@ -29,14 +29,17 @@ namespace ChessWinForms.Models
                     Position target = new Position(r, c);
                     Piece piece = board.GetPiece(target);
 
-                    if(piece==null)
-                        {
+                    if (piece == null)
+                    {
                         moves.Add(target);
                     }
                     else
-                        if(piece.Color != this.Color)
                     {
-                        moves.Add(target);
+                        if (piece.Color != this.Color)
+                        {
+                            moves.Add(target);
+                            
+                        }
                         break;
                     }
                     r += dr[i];

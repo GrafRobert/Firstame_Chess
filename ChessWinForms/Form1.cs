@@ -12,28 +12,28 @@ namespace ChessWinForms
         private int selectedRow = -1;
         private int selectedCol = -1;
 
-        // ELEMENT NOU: Label pentru afișarea turei
+
         private Label lblTurn;
 
         public Form1()
         {
             InitializeComponent();
 
-            // --- CONFIGURARE LABEL TURĂ ---
+
             lblTurn = new Label();
             lblTurn.AutoSize = true;
-            lblTurn.Location = new Point(10, 10); // Poziție stânga-sus (poate fi ajustată)
+            lblTurn.Location = new Point(10, 10);
             lblTurn.Font = new Font("Segoe UI", 12, FontStyle.Bold);
             lblTurn.BackColor = Color.White;
             lblTurn.Text = "Tura: Alb";
             this.Controls.Add(lblTurn);
-            lblTurn.BringToFront(); // Ne asigurăm că e deasupra tablei
-            // -----------------------------
+            lblTurn.BringToFront();
+
 
             SetDoubleBuffered(boardPanel);
 
             gameManager = new GameManager();
-            // Abonare la eveniment fără lambda
+
             gameManager.OnGameStateChanged += OnGameStateChanged;
 
             this.boardPanel.Paint += new PaintEventHandler(BoardPanel_Paint);
@@ -43,7 +43,7 @@ namespace ChessWinForms
 
         private void OnGameStateChanged()
         {
-            // --- ACTUALIZARE TEXT LABEL ---
+
             string numeTura = "";
             if (gameManager.CurrentTurn == PieceColor.White)
                 numeTura = "Alb";
@@ -52,7 +52,7 @@ namespace ChessWinForms
 
             lblTurn.Text = "Tura: " + numeTura;
 
-            
+
 
             boardPanel.Invalidate();
 
@@ -224,5 +224,9 @@ namespace ChessWinForms
                 }
             }
         }
+
+   
+
+
     }
 }

@@ -32,10 +32,13 @@ namespace ChessWinForms.Models
                     {
                         moves.Add(target);
                     }
-                    else 
-                        if(p.Color!=this.Color)
+                    else
                     {
-                        moves.Add(target);
+                        if (p.Color != this.Color)
+                        {
+                            moves.Add(target);
+                            
+                        }
                         break;
                     }
                     r += dr[dir];
