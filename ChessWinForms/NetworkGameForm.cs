@@ -14,7 +14,6 @@ namespace ChessWinForms
         private GameManager gameManager;
         private Panel boardPanel;
 
-        // ELEMENT NOU
         private Label lblTurn;
 
         private TcpClient client;
@@ -127,10 +126,9 @@ namespace ChessWinForms
 
                 client = await listener.AcceptTcpClientAsync();
 
-                //Canal de date
                 stream = client.GetStream();
 
-                // Setăm textul inițial când începe jocul
+  
                 myColor = PieceColor.White;
                 lblTurn.Text = "Jocul a început! Tura: Alb ";
 

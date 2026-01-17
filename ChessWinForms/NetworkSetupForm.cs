@@ -55,7 +55,7 @@ namespace ChessWinForms
             txtIpAddress.Location = new Point(120, 170);
             txtIpAddress.Size = new Size(180, 26);
             txtIpAddress.Visible = false;
-            // Fara lambda aici
+            
             txtIpAddress.Enter += new EventHandler(TxtIpAddress_Enter);
             txtIpAddress.Leave += new EventHandler(TxtIpAddress_Leave);
             Controls.Add(txtIpAddress);
@@ -103,7 +103,7 @@ namespace ChessWinForms
 
         private void BtnHostGame_Click(object sender, EventArgs e)
         {
-            lblStatus.Text = "Pornești ca Host. Așteaptă conexiuni...";
+            
             try
             {
                 NetworkGameForm gameForm = new NetworkGameForm(true, null);
@@ -147,7 +147,7 @@ namespace ChessWinForms
 
             if (string.IsNullOrWhiteSpace(ipText) || ipText == "IP gazdă") return;
 
-            lblStatus.Text = "Încerc conectarea la " + ipText + " ...";
+            
             try
             {
                 NetworkGameForm gameForm = new NetworkGameForm(false, ipText);
@@ -177,20 +177,12 @@ namespace ChessWinForms
             this.Close();
         }
 
-        private void NetworkSetupForm_Load(object sender, EventArgs e) { }
-
-        private void InitializeComponent()
-        {
-            this.SuspendLayout();
-            // 
-            // NetworkSetupForm
-            // 
-            this.ClientSize = new System.Drawing.Size(284, 261);
-            this.Name = "NetworkSetupForm";
-            this.Load += new System.EventHandler(this.NetworkSetupForm_Load_1);
-            this.ResumeLayout(false);
-
+        private void NetworkSetupForm_Load(object sender, EventArgs e) 
+        { 
+        
         }
+
+       
 
         private void NetworkSetupForm_Load_1(object sender, EventArgs e)
         {

@@ -15,7 +15,7 @@ namespace ChessWinForms.Models
             int[] dr = { -2, -2, -1, -1, 1, 1, 2, 2 };
             int[] dc = { -1, 1, -2, 2, -2, 2, -1, 1 };
 
-            for (int i = 0; i < dr.Length; i++)
+            for (int i = 0; i < 8; i++)
             {
                 int r = Position.Row + dr[i];
                 int c = Position.Column + dc[i];

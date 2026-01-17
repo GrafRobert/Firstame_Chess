@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
+
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -65,7 +65,7 @@ namespace ChessWinForms
             btnExit.Click += BtnExit_Click;
             Controls.Add(btnExit);
 
-            // poziționare relativă după adăugarea controalelor
+
             PositionControls();
             this.Resize += (s, e) => PositionControls();
         }
@@ -73,11 +73,11 @@ namespace ChessWinForms
         private void PositionControls()
         {
             int centerX = (this.ClientSize.Width) / 2;
-            lblTitle.Location = new Point(centerX - (lblTitle.Width / 2), 20);
+            lblTitle.Location = new Point(centerX - 40, 20);
 
-            btnLocalGame.Location = new Point(centerX - (btnLocalGame.Width / 2), 90);
-            btnNetworkGame.Location = new Point(centerX - (btnNetworkGame.Width / 2), 150);
-            btnExit.Location = new Point(centerX - (btnExit.Width / 2), 210);
+            btnLocalGame.Location = new Point(centerX - 90, 90);
+            btnNetworkGame.Location = new Point(centerX - 90, 150);
+            btnExit.Location = new Point(centerX - 90, 210);
         }
 
         private void BtnLocalGame_Click(object sender, EventArgs e)
@@ -85,7 +85,7 @@ namespace ChessWinForms
             try
             {
                 this.Hide();
-                using (var gameForm = new Form1()) // înlocuiește Form1 cu formularul jocului tău dacă are alt nume
+                using (var gameForm = new Form1()) 
                 {
                     gameForm.ShowDialog();
                 }
@@ -96,7 +96,7 @@ namespace ChessWinForms
             }
             finally
             {
-                // Guard against trying to show a form that has been disposed (e.g. Application.Exit called by a child dialog)
+                
                 if (!this.IsDisposed && !this.Disposing)
                 {
                     try
@@ -105,7 +105,7 @@ namespace ChessWinForms
                     }
                     catch (ObjectDisposedException)
                     {
-                        // safe fallback: form already disposed, nothing to do
+                       
                     }
                 }
             }
@@ -135,7 +135,7 @@ namespace ChessWinForms
                     }
                     catch (ObjectDisposedException)
                     {
-                        // nothing to do
+                      
                     }
                 }
             }
@@ -144,6 +144,41 @@ namespace ChessWinForms
         private void BtnExit_Click(object sender, EventArgs e)
         {
             Application.Exit();
+        }
+        //private void InitializeComponent()
+        //{
+        //    this.SuspendLayout();
+        //    // 
+        //    // StartMenuForm
+        //    // 
+        //    this.ClientSize = new System.Drawing.Size(284, 261);
+        //    this.Name = "StartMenuForm";
+        //    this.Load += new System.EventHandler(this.StartMenuForm_Load);
+        //    this.ResumeLayout(false);
+
+        //}
+
+        private void StartMenuForm_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        //private void InitializeComponent()
+        //{
+        //    this.SuspendLayout();
+        //    // 
+        //    // StartMenuForm
+        //    // 
+        //    this.ClientSize = new System.Drawing.Size(284, 261);
+        //    this.Name = "StartMenuForm";
+        //    this.Load += new System.EventHandler(this.StartMenuForm_Load_1);
+        //    this.ResumeLayout(false);
+
+        //}
+
+        private void StartMenuForm_Load_1(object sender, EventArgs e)
+        {
+
         }
 
         private void InitializeComponent()
@@ -154,12 +189,12 @@ namespace ChessWinForms
             // 
             this.ClientSize = new System.Drawing.Size(284, 261);
             this.Name = "StartMenuForm";
-            this.Load += new System.EventHandler(this.StartMenuForm_Load);
+            this.Load += new System.EventHandler(this.StartMenuForm_Load_2);
             this.ResumeLayout(false);
 
         }
 
-        private void StartMenuForm_Load(object sender, EventArgs e)
+        private void StartMenuForm_Load_2(object sender, EventArgs e)
         {
 
         }

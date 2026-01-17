@@ -160,18 +160,7 @@ namespace ChessWinForms
                 g.DrawImage(img, rect);
                 img.Dispose();
             }
-            //else
-            //{
-            //    // Fallback text
-            //    Font f = new Font("Arial", Math.Max(8, rect.Height / 3));
-            //    Brush br = new SolidBrush(Color.Black);
-            //    string fallbackText = prefix.ToUpper() + suffix;
-            //    SizeF sz = g.MeasureString(fallbackText, f);
-            //    PointF pt = new PointF(rect.X + (rect.Width - sz.Width) / 2f, rect.Y + (rect.Height - sz.Height) / 2f);
-            //    g.DrawString(fallbackText, f, br, pt);
-            //    f.Dispose();
-            //    br.Dispose();
-            //}
+       
         }
 
         private Position PixelToPosition(Point p)

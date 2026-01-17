@@ -28,7 +28,6 @@ namespace ChessWinForms.Models
                 Piece captured = board.GetPiece(target);
                 if (captured == null || captured.Color != this.Color)
                 {
-                    Console.WriteLine($"Checking square {target.Row}, {target.Column} → attacked: {board.IsSquareAttacked(target, enemyColor)}");
 
                     if (!board.IsSquareAttacked(target, enemyColor))
                     {

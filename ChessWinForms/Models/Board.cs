@@ -49,33 +49,33 @@ namespace ChessWinForms.Models
             SetPiece(whiteRookH.Position, whiteRookH);
         
 
-        // Black major pieces (top)
-        // SetPiece(new Position(0, 0), new Rook(PieceColor.Black, new Position(0, 0)));
+        // Piesele negre de sus
+        
             SetPiece(new Position(0, 1), new Knight(PieceColor.Black, new Position(0, 1)));
             SetPiece(new Position(0, 2), new Bishop(PieceColor.Black, new Position(0, 2)));
             SetPiece(new Position(0, 3), new Queen(PieceColor.Black, new Position(0, 3)));
             SetPiece(new Position(0, 4), new King(PieceColor.Black, new Position(0, 4)));
             SetPiece(new Position(0, 5), new Bishop(PieceColor.Black, new Position(0, 5)));
             SetPiece(new Position(0, 6), new Knight(PieceColor.Black, new Position(0, 6)));
-           // SetPiece(new Position(0, 7), new Rook(PieceColor.Black, new Position(0, 7)));
+           
 
-            // Black pawns
+            //Pionii albi/negrii
             for (int c = 0; c < 8; c++)
                 SetPiece(new Position(1, c), new Pawn(PieceColor.Black, new Position(1, c)));
 
-            // White pawns
+            
             for (int c = 0; c < 8; c++)
                 SetPiece(new Position(6, c), new Pawn(PieceColor.White, new Position(6, c)));
 
-            // White major pieces (bottom)
-           // SetPiece(new Position(7, 0), new Rook(PieceColor.White, new Position(7, 0)));
+
+            // Piesele albe de jos
             SetPiece(new Position(7, 1), new Knight(PieceColor.White, new Position(7, 1)));
             SetPiece(new Position(7, 2), new Bishop(PieceColor.White, new Position(7, 2)));
             SetPiece(new Position(7, 3), new Queen(PieceColor.White, new Position(7, 3)));
             SetPiece(new Position(7, 4), new King(PieceColor.White, new Position(7, 4)));
             SetPiece(new Position(7, 5), new Bishop(PieceColor.White, new Position(7, 5)));
             SetPiece(new Position(7, 6), new Knight(PieceColor.White, new Position(7, 6)));
-            //SetPiece(new Position(7, 7), new Rook(PieceColor.White, new Position(7, 7)));
+            
         }
 
 
@@ -134,98 +134,45 @@ namespace ChessWinForms.Models
 
         public bool HasAnyLegalMove(PieceColor color)
         {
-            // 1. Luăm toate piesele jucătorului 'color'
+            
             for (int r = 0; r < 8; r++)
             {
                 for (int c = 0; c < 8; c++)
                 {
-                    Piece p = Cells[r, c];
-                    if (p == null || p.Color != color) continue;
+                    Piece piece = Cells[r, c];
+                    if (piece == null || piece.Color != color) continue;
 
-                    // 2. Luăm toate mutările posibile "fizic" (geometrice)
-                    var moves = p.GetPossibleMoves(this);
+                  
+                    var moves = piece.GetPossibleMoves(this);
 
                     foreach (var target in moves)
                     {
-                        // --- SIMULARE ---
-                        // Salvăm starea curentă
-                        Position start = p.Position;
-                        Piece captured = Cells[target.Row, target.Column];
+                       
+                        Position start = piece.Position;
+                        Piece captured = GetPiece(target);
 
-                        // Executăm mutarea temporar direct pe matricea Cells
-                        SetPiece(target, p);
+                        
+                        SetPiece(target, piece);
                         SetPiece(start, null);
-                        //Cells[target.Row, target.Column] = p;
-                        //Cells[start.Row, start.Column] = null;
-                        //p.Position = target;
-
-                        // Verificăm: A dispărut șahul?
+                      
                         bool kingSafe = !IsInCheck(color);
 
-                        // --- UNDO (Revenim la starea inițială) ---
-                        SetPiece(start, p);
+                        SetPiece(start, piece);
                         SetPiece(target, captured);
-                        //Cells[start.Row, start.Column] = p;
-                        //p.Position = start;
-                        //Cells[target.Row, target.Column] = captured;
 
-                        // Dacă am găsit MĂCAR O mutare care ne scoate din șah, înseamnă că nu e mat.
                         if (kingSafe) return true;
                     }
                 }
             }
 
-            // Dacă am verificat tot și nu am găsit nicio scăpare
             return false;
         }
-
-
-        //public bool HasAnyPseudoMove(PieceColor color)
-        //{
-        //    for (int r = 0; r < 8; r++)
-        //    {
-        //        for (int c = 0; c < 8; c++)
-        //        {
-        //            var p = Cells[r, c];
-        //            if (p == null || p.Color != color) continue;
-        //            var moves = p.GetPossibleMoves(this);
-        //            if (moves != null && moves.Count > 0) return true;
-        //        }
-        //    }
-        //    return false;
-        //}
-
 
         public bool IsCheckmate(PieceColor color)
         {
             return IsInCheck(color) && !HasAnyLegalMove(color);
-
             
         }
-
-       
-        public bool IsStalemate(PieceColor color)
-        {
-            if (IsInCheck(color)) return false;
-            return !HasAnyLegalMove(color);
-        }
-
-        public List<Piece> GetAllPieces(PieceColor color)
-        {
-            var pieces = new List<Piece>();
-            for (int r = 0; r < 8; r++)
-            {
-                for (int c = 0; c < 8; c++)
-                {
-                    Piece p = Cells[r, c];
-                    if (p != null && p.Color == color)
-                        pieces.Add(p);
-                }
-            }
-            return pieces;
-        }
-
-
 
         public bool IsSquareAttacked(Position pos, PieceColor Color)
         {

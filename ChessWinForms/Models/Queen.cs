@@ -16,7 +16,7 @@ namespace ChessWinForms.Models
         {
             var moves = new List<Position>();
 
-            // Toate cele 8 direcții
+           
             int[] dr = { -1, -1, -1, 0, 0, 1, 1, 1 };
             int[] dc = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
@@ -40,7 +40,7 @@ namespace ChessWinForms.Models
                         {
                             moves.Add(target);
                         }
-                        // STOP la orice piesă
+                      
                         break;
                     }
                     r += dr[i];
