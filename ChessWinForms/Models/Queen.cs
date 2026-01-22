@@ -38,7 +38,7 @@ namespace ChessWinForms.Models
                     {
                         if (p.Color != this.Color)
                         {
-                            moves.Add(target);
+                           moves.Add(target);
                         }
                       
                         break;

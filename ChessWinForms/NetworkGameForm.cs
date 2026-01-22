@@ -15,6 +15,7 @@ namespace ChessWinForms
         private Panel boardPanel;
 
         private Label lblTurn;
+      
 
         private TcpClient client;
         private TcpListener listener;
@@ -38,15 +39,15 @@ namespace ChessWinForms
             gameManager = new GameManager();
             gameManager.OnGameStateChanged += OnGameStateChanged;
 
-           
+
             lblTurn = new Label();
             lblTurn.Dock = DockStyle.Top;
             lblTurn.Height = 30;          
             lblTurn.TextAlign = ContentAlignment.MiddleCenter; 
             lblTurn.Font = new Font("Segoe UI", 14, FontStyle.Bold);
             lblTurn.Text = "Așteptare conexiune...";
-            Controls.Add(lblTurn); 
-           
+            Controls.Add(lblTurn);
+
 
             boardPanel = new Panel();
             boardPanel.Dock = DockStyle.Fill; 
@@ -54,6 +55,7 @@ namespace ChessWinForms
 
             boardPanel.Paint += new PaintEventHandler(BoardPanel_Paint);
             boardPanel.MouseClick += new MouseEventHandler(BoardPanel_MouseClick);
+            boardPanel.Resize += new EventHandler(BoardPanel_Resize);
 
             System.Reflection.PropertyInfo aProp = typeof(Control).GetProperty("DoubleBuffered",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
@@ -63,13 +65,19 @@ namespace ChessWinForms
             Controls.Add(boardPanel);
             
             boardPanel.BringToFront();
+
             lblTurn.SendToBack();
-                                 
+
 
             if (isHost)
                 StartHosting();
             else
                 ConnectToHost();
+        }
+
+        private void BoardPanel_Resize(object sender, EventArgs e)
+        {
+            boardPanel.Invalidate();
         }
 
         private void OnGameStateChanged()
@@ -177,12 +185,13 @@ namespace ChessWinForms
                     }
 
                     string msg = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                   
                     string[] parts = msg.Split(':');
 
                     if (parts.Length == 2)
                     {
-                        Position from = ParsePosition(parts[0]);
-                        Position to = ParsePosition(parts[1]);
+                        Position from = CreatePosition(parts[0]);
+                        Position to = CreatePosition(parts[1]);
 
                         this.Invoke(new UpdateBoardDelegate(ApplyRemoteMove), new object[] { from, to });
                     }
@@ -208,7 +217,7 @@ namespace ChessWinForms
             if (listener != null) listener.Stop();
         }
 
-        private Position ParsePosition(string s)
+        private Position CreatePosition(string s)
         {
             try
             {
@@ -317,7 +326,7 @@ namespace ChessWinForms
 
             Piece clickedPiece = gameManager.Board.GetPiece(pos);
 
-            if (selectedRow < 0 || selectedCol < 0)
+            if (selectedRow < 0 && selectedCol < 0)
             {
                 if (clickedPiece != null && clickedPiece.Color == myColor)
                 {

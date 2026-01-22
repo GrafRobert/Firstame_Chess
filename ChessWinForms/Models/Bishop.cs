@@ -23,9 +23,10 @@ namespace ChessWinForms.Models
             {
                 int r = Position.Row + dr[i];
                 int c = Position.Column + dc[i];
-
+            
                 while(new Position(r,c).IsValid())
                 {
+                    
                     Position target = new Position(r, c);
                     Piece piece = board.GetPiece(target);
 

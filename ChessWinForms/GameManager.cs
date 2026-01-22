@@ -32,7 +32,7 @@ namespace ChessWinForms
             Piece piece = Board.GetPiece(from);
             if (piece == null || piece.Color != CurrentTurn) return false;
 
-            var moves = Board.GetPossibleMoves(from);
+            var  moves = Board.GetPossibleMoves(from);
             bool isPossible = false;
             foreach (Position m in moves)
             {
@@ -97,13 +97,7 @@ namespace ChessWinForms
             PieceColor opponent = CurrentTurn;
             PieceColor mover = (CurrentTurn == PieceColor.White) ? PieceColor.Black : PieceColor.White;
 
-            Position tempPos = Board.TryFindKingPosition(opponent);
-            if (tempPos == null)
-            {
-                IsGameOver = true;
-                GameOverMessage = opponent.ToString() + " king captured. " + mover.ToString() + " wins!";
-            }
-            else if (Board.IsCheckmate(opponent))
+            if (Board.IsCheckmate(opponent))
             {
                 IsGameOver = true;
                 GameOverMessage = opponent.ToString() + " is checkmated. " + mover.ToString() + " wins!";
